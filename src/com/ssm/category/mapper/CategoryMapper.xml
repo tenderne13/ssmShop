@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间，为了对sql语句进行隔离，方便管理 ，mapper开发dao方式，使用namespace有特殊作用
+mapper代理开发时将namespace指定为mapper接口的全限定名
+ -->
+<mapper namespace="com.ssm.category.mapper.CategoryMapper">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache">
+		<property name="timeToIdleSeconds" value="3600"/><!--1 hour-->  
+	    <property name="timeToLiveSeconds" value="3600"/><!--1 hour-->  
+	    <property name="maxEntriesLocalHeap" value="1000"/>  
+	    <property name="maxEntriesLocalDisk" value="10000000"/>  
+	    <property name="memoryStoreEvictionPolicy" value="LRU"/>  
+	</cache>
+	<select id="findAll"  resultType="com.ssm.category.po.Category">
+		SELECT
+			*
+		FROM
+			category
+	</select>
+	
+	<select id="findOneAndSec" parameterType="com.ssm.category.po.Category" resultMap="OneAndSecResultMap">
+		SELECT
+			c.cid,
+			c.cname,
+			cs.csid,
+			cs.csname
+		FROM
+			category c,
+			categorysecond cs
+		WHERE
+			c.cid = cs.cid
+	</select>
+	
+	<resultMap type="com.ssm.category.po.Category" id="OneAndSecResultMap">
+		<id column="cid" property="cid"/>
+		<result column="cname" property="cname"/>
+		<collection property="categorySeconds" ofType="com.ssm.categorysecond.po.CategorySecond">
+			<id column="csid" property="csid"/>
+			<result column="csname" property="csname"/>
+			<result column="cid" property="parid"/>
+		</collection>
+	</resultMap>
+</mapper>
+

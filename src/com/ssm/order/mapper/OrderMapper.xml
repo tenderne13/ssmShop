@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间，为了对sql语句进行隔离，方便管理 ，mapper开发dao方式，使用namespace有特殊作用
+mapper代理开发时将namespace指定为mapper接口的全限定名
+ -->
+<mapper namespace="com.ssm.order.mapper.OrderMapper">
+	<select id="selectTotalCount" parameterType="com.ssm.user.po.UserCustom"  resultType="Integer">
+		SELECT
+			count(*)
+		FROM
+			USER u,
+			orders o,
+			orderitem oi,
+			product p
+		WHERE
+			u.uid = o.uid
+		AND o.oid = oi.oid
+		AND oi.pid = p.pid 
+		AND o.uid=#{uid}
+	</select>
+	
+	<select id="findOrderByUid" parameterType="com.ssm.user.po.UserCustom" resultMap="OrderMap">
+		SELECT
+			*
+		FROM
+			USER u,
+			orders o,
+			orderitem oi,
+			product p
+		WHERE
+			u.uid = o.uid
+		AND o.oid = oi.oid
+		AND oi.pid = p.pid 
+		AND o.uid=#{uid} ORDER BY o.oid desc limit #{begin},#{limit}
+	</select>
+	
+	<resultMap type="com.ssm.order.po.Order" id="OrderMap">
+		<id column="oid" property="oid"/>
+		<result column="total" property="total"/>
+		<result column="ordertime" property="ordertime"/>
+		<result column="state" property="state"/>
+		<result column="name" property="name"/>
+		<result column="phone" property="phone"/>
+		<result column="addr" property="addr"/>
+		<collection property="orderItems" ofType="com.ssm.order.po.OrderItem">
+			<id column="itemid" property="itemid"/>
+			<result column="count" property="count"/>
+			<result column="subtotal" property="subtotal"/>
+			<association property="product" javaType="com.ssm.product.po.Product">
+				<id column="pid" property="pid"/>
+				<result column="pname" property="pname"/>
+				<result column="market_price" property="market_price"/>
+				<result column="shop_price" property="shop_price"/>
+				<result column="image" property="image"/>
+				<result column="pdesc" property="pdesc"/>
+				<result column="is_hot" property="is_hot"/>
+			</association>
+		</collection>
+	</resultMap>
+</mapper>
+

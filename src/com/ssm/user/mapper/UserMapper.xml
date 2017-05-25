@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间，为了对sql语句进行隔离，方便管理 ，mapper开发dao方式，使用namespace有特殊作用
+mapper代理开发时将namespace指定为mapper接口的全限定名
+ -->
+<mapper namespace="com.ssm.user.mapper.UserMapper">
+	<!-- 配置ehCache缓存 -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache">
+		<property name="timeToIdleSeconds" value="3600"/><!--1 hour-->  
+	    <property name="timeToLiveSeconds" value="3600"/><!--1 hour-->  
+	    <property name="maxEntriesLocalHeap" value="1000"/>  
+	    <property name="maxEntriesLocalDisk" value="10000000"/>  
+	    <property name="memoryStoreEvictionPolicy" value="LRU"/>  
+	</cache>
+	<!-- 校验用户是否存在 -->
+	<select id="findUserName" parameterType="com.ssm.user.po.User"  resultType="com.ssm.user.po.User">
+		SELECT
+			*
+		FROM
+			USER
+		WHERE
+			username = #{username} 
+	</select>
+	<!-- 注册用户 -->
+	<insert id="insertUser" parameterType="com.ssm.user.po.User">
+		INSERT INTO USER (
+			username,
+			PASSWORD,
+			NAME,
+			email,
+			phone,
+			addr,
+			state,
+			CODE
+		)
+		VALUES
+			(#{username}, #{password},#{name},#{email},#{phone},#{addr},#{state},#{code})
+	</insert>
+	
+	<!-- 查询登录用户 -->
+	<select id="findUserByNP" parameterType="com.ssm.user.po.User"  resultType="com.ssm.user.po.User">
+				SELECT
+				*
+			FROM
+				USER
+			WHERE
+				username = #{username}
+			AND PASSWORD = #{password}
+	</select>
+</mapper>
+

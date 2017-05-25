@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+	<context:component-scan base-package="com.ssm"/>
+	
+	<!-- 通过下面方法可以替代下方的处理器和适配器的配置 -->
+	<mvc:annotation-driven/>
+	
+	<!-- 注册适配器 
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+			<property name="messageConverters">
+				<list>
+						<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean>
+				</list>
+			</property>
+	</bean>-->
+	<!-- 注册适配器 -->
+		<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+				<!-- <property name="messageConverters">
+						<list>
+							<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+						</list>
+				</property> -->
+				<!-- 加入json的适配转化器 -->
+				<property name="messageConverters">
+					<list>
+						<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+					</list>
+				</property>
+		</bean>
+	
+ 
+	
+	<!-- 视图解析器 -->
+      <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	      <!-- 路径前缀 -->
+	      <property name="prefix" value="/WEB-INF/jsp/"/>
+	      <!-- 路径后缀 -->
+	      <property name="suffix" value=".jsp"/>
+      </bean>
+</beans>

@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.user.mapper.SelectiveMapper">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" >  
+    <property name="timeToIdleSeconds" value="3600"/><!--1 hour-->  
+    <property name="timeToLiveSeconds" value="3600"/><!--1 hour-->  
+    <property name="maxEntriesLocalHeap" value="1000"/>  
+    <property name="maxEntriesLocalDisk" value="10000000"/>  
+    <property name="memoryStoreEvictionPolicy" value="LRU"/>  
+	</cache>
+	<!-- 列 -->
+	<sql id="COLUMN">
+		id               AS id,
+		les_id           AS lesId,
+		sce_stat         AS sceStat,
+		sce_week         AS sceWeek,
+		sce_lession      AS sceLession,
+		clm_id           AS clmId,
+		sce_time_xkstart AS sceTimeXkstart,
+		sce_time_xkend   AS sceTimeXkend,
+		sce_number       AS sceNumber,
+		sce_createtime   AS sceCreatetime,
+		sce_createuser   AS sceCreateuser,
+		status           AS status,
+		state            AS state,
+		school_id        AS schoolId,
+		school           AS school,
+		create_date      AS createDate,
+		end_date         AS endDate,
+		semester         AS semester,
+		secislk          AS secislk,
+		jt_id            AS jtId,
+		teach_id         AS teachId,
+		class_Id         AS classId,
+		gx_status        AS gxStatus,
+		is_share         AS isShare,
+		lx               AS lx,
+		ks               AS ks
+	</sql>
+	<!-- 公用查询 -->
+	<sql id="QUERYSQL">
+		<where>
+			1=1
+			<if test="schoolId != null">  and school_id  =    #{schoolId}  </if>
+			<if test="state != null">     and state      =    #{state}     </if>
+			<if test="status != null">    and status    like "%${status}%" </if>
+			<if test="jtId != null">      
+				and (jt_id = #{jtId} or is_share = #{isShare})     
+			</if>
+		</where>
+	</sql>
+	<!-- 关联查询 -->
+	<sql id="COLUMNUNIONLESSION">
+		s.id               AS id,
+		s.les_id           AS lesId,
+		s.sce_stat         AS sceStat,
+		s.sce_week         AS sceWeek,
+		s.sce_lession      AS sceLession,
+		s.clm_id           AS clmId,
+		s.sce_time_xkstart AS sceTimeXkstart,
+		s.sce_time_xkend   AS sceTimeXkend,
+		s.sce_number       AS sceNumber,
+		s.sce_createtime   AS sceCreatetime,
+		s.sce_createuser   AS sceCreateuser,
+		s.status           AS status,
+		s.state            AS state,
+		s.school_id        AS schoolId,
+		s.school           AS school,
+		s.create_date      AS createDate,
+		s.end_date         AS endDate,
+		s.semester         AS semester,
+		s.secislk          AS secislk,
+		s.jt_id            AS jtId,
+		s.teach_id         AS teachId,
+		s.class_Id         AS classId,
+		s.gx_status        AS gxStatus,
+		s.is_share         AS isShare,
+		s.lx               AS lx,
+		s.ks               AS ks,
+		l.les_name		 AS lesName
+	</sql>
+	<!-- 插入 -->
+	<insert id="insert">
+		INSERT INTO
+			selective
+		(
+			les_id,
+			sce_stat,
+			sce_week,
+			sce_lession,
+			clm_id,
+			sce_time_xkstart,
+			sce_time_xkend,
+			sce_number,
+			sce_createtime,
+			sce_createuser,
+			status,
+			state,
+			school_id,
+			school,
+			create_date,
+			end_date,
+			semester,
+			secislk,
+			jt_id,
+			teach_id,
+			class_Id,
+			gx_status,
+			is_share,
+			lx,
+			ks 
+		)
+		VALUES
+		(
+			#{lesId},
+			#{sceStat},
+			#{sceWeek},
+			#{sceLession},
+			#{clmId},
+			#{sceTimeXkstart},
+			#{sceTimeXkend},
+			#{sceNumber},
+			#{sceCreatetime},
+			#{sceCreateuser},
+			#{status},
+			#{state},
+			#{schoolId},
+			#{school},
+			#{createDate},
+			#{endDate},
+			#{semester},
+			#{secislk},
+			#{jtId},
+			#{teachId},
+			#{classId},
+			#{gxStatus},
+			#{isShare},
+			#{lx},
+			#{ks}
+			
+		)
+	</insert>
+	<!-- 根据ID 修改共享状态 -->
+	<update id="updateShare">
+		UPDATE
+			selective
+		SET
+			is_share         = #{isShare}
+		WHERE
+			id = #{id}
+	</update>
+	<!-- 根据ID修改状态 -->
+	<update id="updateState">
+		UPDATE
+			selective
+		SET
+			state            = #{state}
+		WHERE
+			id = #{id}
+	</update>
+	<!--修改 -->
+	<update id="update">
+		UPDATE
+			selective
+		SET
+			les_id           = #{lesId},
+			sce_stat         = #{sceStat},
+			sce_week         = #{sceWeek},
+			sce_lession      = #{sceLession},
+			clm_id           = #{clmId},
+			sce_time_xkstart = #{sceTimeXkstart},
+			sce_time_xkend   = #{sceTimeXkend},
+			sce_number       = #{sceNumber},
+			sce_createtime   = #{sceCreatetime},
+			sce_createuser   = #{sceCreateuser},
+			status           = #{status},
+			state            = #{state},
+			create_date      =#{createDate},
+			end_date         = #{endDate},
+			semester         = #{semester},
+			secislk          = #{secislk},
+			jt_id            = #{jtId},
+			teach_id         = #{teachId},
+			class_Id         = #{classId},
+			gx_status        = #{gxStatus},
+			is_share         = #{isShare},
+			lx               = #{lx},
+			ks               = #{ks}
+		WHERE
+			id = #{id}
+	</update>
+	<!-- 根据ID删除 -->
+	<delete id="deleteByPrimaryKey">
+		DELETE FROM
+			selective
+		WHERE
+			id = #{id}
+	</delete>
+	<!-- 根据ID查询 -->
+	<select id="selectByPrimaryKey" resultType="com.ssm.user.po.Selective">
+		SELECT
+			<include refid="COLUMN" />
+		FROM
+			selective
+		WHERE
+			id = #{id}
+	</select>
+	<!-- 分页查询  -->
+	<select id="selectByPage" resultType="com.ssm.user.po.Selective">
+		SELECT 
+			<include refid="COLUMN" />
+		FROM
+			selective
+			<include refid="QUERYSQL"/>
+	</select>
+	<!-- 查询总数 -->
+	<select id="count" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			selective
+			<include refid="QUERYSQL"/>
+			
+			<if test="asceLession != null">
+				and (sce_lession in   
+				 <foreach item="item" index="index" collection="asceLession" open="(" separator="," close=")">  
+					  #{item}  
+				 </foreach>  
+				
+				or sce_lession like '%${sceLession}%') 
+			</if>
+	</select>
+	<!-- 是否包含信息 -->
+	<select id="havaSelect" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM 
+			selective
+		WHERE 
+			les_id      = #{lesId}      and 
+			sce_week    = #{sceWeek}    and 
+			semester    = #{semester}   and 
+			sce_lession = #{sceLession} and 
+			status      = #{status}
+	</select>
+	<!-- 查询选课 -->
+	<select id="getSelectiveBySelective" resultType="com.ssm.user.po.Selective">
+		SELECT 
+			<include refid="COLUMN" />,
+			(select les_name from lession les where  les.id=les_id )  lesName
+		FROM 
+			selective
+		WHERE
+			sysdate() between create_date and end_date
+			<if test="schoolId != null">  and school_id  =    #{schoolId}  </if>
+			<if test="state != null">     and state      =    #{state}     </if>
+			<if test="status != null">    and status    like "%${status}%" </if>
+			ORDER BY ks
+	</select>
+	<!-- 更改过期状态 -->
+	<update id="upExpired">
+		UPDATE 
+			selective
+		SET 
+			state = '3'
+		WHERE  
+			<![CDATA[ end_date <= now() ]]>
+	</update>
+	<!-- 批量设置选课 -->
+	<update id="editState">
+		UPDATE
+			selective
+		SET
+			state = '1'
+		where
+			id in
+			<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	</update>
+	   <!-- 根据学生年级班级查询可选课程 -->
+    <select id="getSelectiveOptional" resultType="com.ssm.user.po.Selective">
+    	SELECT 
+			sl.id AS id,
+  les_id AS lesId,
+  sce_stat AS sceStat,
+  sce_week AS sceWeek,
+  sce_lession AS sceLession,
+  sl.clm_id AS clmId,
+  sce_time_xkstart AS sceTimeXkstart,
+  sce_time_xkend AS sceTimeXkend,
+  sce_number AS sceNumber,
+  sce_createtime AS sceCreatetime,
+  sce_createuser AS sceCreateuser,
+  STATUS AS STATUS,
+  state AS state,
+  sl.school_id AS schoolId,
+  sl.school AS school,
+  sl.create_date AS createDate,
+  sl.end_date AS endDate,
+  sl.semester AS semester,
+  sl.secislk AS secislk,
+  sl.jt_id AS jtId,
+  sl.teach_id AS teachId,
+  sl.class_Id AS classId,
+  sl.gx_status AS gxStatus,
+  sl.is_share AS isShare,
+  lx AS lx,
+  ks AS ks,
+			(select les_name from lession les where  les.id=les_id )  lesName
+		FROM 
+			 selective sl,semester sm 
+		WHERE sl.id IN(
+		SELECT 
+			selectiveID 
+		FROM 
+			selectiveNumLimit 
+		WHERE 
+			grade LIKE "%${grade}%"
+		AND   
+			classs = #{classs}
+		UNION
+		SELECT
+			 selectiveID 
+		FROM 
+			selectiveNumLimit
+		WHERE
+			grade LIKE "%${grade}%"	
+		AND 
+			classs IS NULL
+)
+		AND sl.`semester` = sm.`id`
+		AND <![CDATA[sm.`ssr_starttime` <= #{time}]]>
+		AND <![CDATA[sm.`ssr_endtime`>=#{time}]]>
+	
+    </select>
+    <select id="getChoseNum" resultType="java.lang.String">
+    SELECT IFNULL
+((
+    	SELECT COUNT(sle_id)
+    	FROM student_seletive 
+    	WHERE sle_id = #{selectiveId}
+),'0') 	
+		AS num
+    </select>
+    <select id="getSelectiveData" resultType="com.ssm.user.po.Selective">
+    SELECT 
+  		s.`id`              AS id,
+  		s.`teach_id`        AS teachId,
+ 		l.`les_name`        AS lesName,
+  		s.`sce_number`      AS sceNumber,
+  		COUNT(ss.`sle_id`)  AS chooseNum
+	FROM
+  		selective s,
+  		student_seletive ss,
+  		lession l 
+	WHERE 
+		ss.`sle_id` = s.`id` 
+  	AND 
+  		s.`les_id` = l.`id`
+  	AND 
+  		s.`id` = #{selectiveId}
+    </select>
+    <!-- 根据ID查询 联合lession查询 -->
+	<select id="getSelectLessionByPrimaryKey" resultType="com.ssm.user.po.Selective">
+		SELECT
+			<include refid="COLUMNUNIONLESSION" />
+		FROM
+			selective s,lession l
+		WHERE
+			s.les_id = l.id
+			and s.id = #{id}
+	</select>
+	<select id="getLessionLimitNum" resultType="java.lang.Integer">
+	SELECT 
+  		lg.limitNum 
+	FROM
+ 		lessiongroup lg,
+  		selective s,
+  		lession l 
+	WHERE s.les_id = l.id 
+  	AND l.lessionGroupId = lg.id 
+  	AND s.id = #{selectiveId}
+	</select>
+	<select id="getGroupLessionNum" resultType="java.lang.Integer">
+		SELECT 
+  			COUNT(ss.`stu_loinname`) AS num
+		FROM
+  			student_seletive ss 
+		WHERE 
+			ss.`stu_loinname` = #{longinName} 
+  		AND 
+  			ss.sle_id IN 
+  		(SELECT 
+    		s.id 
+  		 FROM
+    		selective s,
+    		lession l 
+ 		 WHERE 
+ 		 	s.les_id = l.id 
+    	 AND 
+    	 	l.lessionGroupId = 
+    	 (SELECT 
+      		l.lessionGroupId 
+   		  FROM
+      		lession l,
+      		selective s 
+    	  WHERE 
+    	  	s.les_id = l.id 
+      	  AND 
+      	  	s.id = #{selectiveId}))
+	</select>
+	<update id="updateSelectiveDate">
+		UPDATE
+			selective
+		SET
+			create_date = #{createdate},
+			end_date = #{enddate}
+		WHERE
+			semester = #{semester}
+	</update>
+	<!-- 根据选课ID查询课程ID -->
+	<select id="getLessionNameBySelectiveId" resultType="java.lang.String">
+		SELECT 
+  			l.`les_name` 
+		FROM
+  			selective s,
+  			lession l 
+		WHERE 
+			s.`les_id` = l.`id` 
+  		AND 
+  			s.`id` = #{selectiveId}
+		
+	</select>
+	<select id="getSelectiveBySelectiveId" resultType="com.ssm.user.po.Selective">
+	SELECT 
+  		s.`id`              AS id,
+  		s.`teach_id`        AS teachId,
+ 		l.`les_name`        AS lesName,
+  		s.`sce_number`      AS sceNumber,
+  		COUNT(ss.`sle_id`)  AS chooseNum
+	FROM
+  		selective s,
+  		student_seletive ss,
+  		lession l 
+	WHERE 
+		ss.`sle_id` = s.`id` 
+  	AND 
+  		s.`les_id` = l.`id`
+  	AND 
+  		s.`id` = 
+(	SELECT 
+		id 
+	FROM 
+		selective 
+	WHERE 
+		id = #{selectiveId} 
+	FOR UPDATE
+)
+	</select>
+	<!--
+	<select id="getSelectiveBySelectiveId" resultType="com.hy.school.entity.Selective">
+	SELECT 
+	  s.`id` AS id,
+	  s.`teach_id` AS teachId,
+	  l.`les_name` AS lesName,
+	  s.`sce_number` AS sceNumber,
+	  s.choseNum AS chooseNum 
+	FROM
+	  selective s,
+	  lession l 
+	WHERE s.`les_id` = l.`id` 
+	  AND s.`id` = #{selectiveId}
+	</select>
+	
+	<update id="updateChoseNum">
+		UPDATE
+			selective
+		SET
+			choseNum = choseNum + 1
+		WHERE
+			id = #{sleId}
+	</update>
+	-->
+	 <!--
+	<select id="getSelectiveList" resultType="com.hy.school.entity.Selective"  statementType="CALLABLE">
+	 {call proc_getSelectiveList
+	  (
+       #{grade,clasz,timescore,loginname,jdbcType=VARCHAR,mode=IN}
+      )
+     }
+	</select>
+	-->
+	
+	<!-- 暂时不用（宝强团队提供的底层框架暂不支持调用存储过程，有待完善） -->
+	<!-- 
+	<select id="getSelectiveList" resultType="com.hy.school.entity.Selective" statementType="CALLABLE">
+	 {#{d,mode=OUT,jdbcType=CURSOR}=call proc_getSelectiveList(
+              #{grade,mode=IN,jdbcType=VARCHAR},
+              #{clasz,mode=IN,jdbcType=VARCHAR},
+              #{timescore,mode=IN,jdbcType=VARCHAR},
+              #{loginname,mode=IN,jdbcType=VARCHAR}
+
+     )} 
+	</select>
+	 -->
+</mapper>

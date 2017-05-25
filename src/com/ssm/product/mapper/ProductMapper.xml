@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间，为了对sql语句进行隔离，方便管理 ，mapper开发dao方式，使用namespace有特殊作用
+mapper代理开发时将namespace指定为mapper接口的全限定名
+ -->
+<mapper namespace="com.ssm.product.mapper.ProductMapper">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache">
+		<property name="timeToIdleSeconds" value="3600"/><!--1 hour-->  
+	    <property name="timeToLiveSeconds" value="3600"/><!--1 hour-->  
+	    <property name="maxEntriesLocalHeap" value="1000"/>  
+	    <property name="maxEntriesLocalDisk" value="10000000"/>  
+	    <property name="memoryStoreEvictionPolicy" value="LRU"/>  
+	</cache>
+	<!-- 查询属于一级分类的二级分类 -->
+	<select id="findCsidByCid" parameterType="com.ssm.product.po.ProductCustom" resultType="Integer">
+		SELECT
+			csid
+		FROM
+			categorysecond
+		WHERE
+			cid =#{cid}
+	</select>
+	<select id="findCountByCid" parameterType="com.ssm.product.po.ProductCustom" resultType="Integer">
+		SELECT
+			count(*)
+		FROM
+			product
+		WHERE
+			<foreach collection="ids" open=" csid in(" close=")" item="id" separator="," >
+				#{id}
+			</foreach>
+	</select>
+	
+	<select id="findCountByCsid" parameterType="com.ssm.product.po.ProductCustom" resultType="Integer">
+		SELECT
+			count(*)
+		FROM
+			product
+		WHERE
+			csid=#{csid}
+	</select>
+	
+	
+	<select id="findHot"  resultType="com.ssm.product.po.Product">
+		SELECT * from product WHERE is_hot = 1  order by pid desc LIMIT 0,10
+	</select>
+	<select id="findProductByPid" parameterType="com.ssm.product.po.Product" resultType="com.ssm.product.po.Product">
+		SELECT
+			*
+		FROM
+			product
+		WHERE
+			pid = #{pid}
+	</select>
+	<select id="findNew" resultType="com.ssm.product.po.Product">
+		SELECT
+			*
+		FROM
+			product
+		ORDER BY
+			pdate DESC
+		LIMIT 0,10
+	</select>
+	
+	
+	<!-- 分页查询一级分类 -->
+	<select id="findByPageCid" parameterType="com.ssm.product.po.ProductCustom" resultType="com.ssm.product.po.ProductCustom">
+		SELECT
+			*
+		FROM
+			product
+		WHERE
+			<foreach collection="ids" open=" csid in(" close=")" item="id" separator="," >
+				#{id}
+			</foreach>
+		LIMIT #{begin},#{limit}
+	</select>
+	<!-- 分页查询二级分类中的商品 -->
+	<select id="findByPageCsid" parameterType="com.ssm.product.po.ProductCustom" resultType="com.ssm.product.po.ProductCustom">
+		SELECT
+			*
+		FROM
+			product
+		WHERE
+			csid = #{csid}
+		LIMIT #{begin},#{limit}
+	</select>
+</mapper>
+
